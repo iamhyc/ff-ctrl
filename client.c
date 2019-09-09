@@ -1,6 +1,6 @@
 #include "general.h"
 
-int init_socket()
+int init_socket(const char* ip_addr)
 {
     int sockfd = 0;
     struct sockaddr_in addr;
@@ -11,7 +11,7 @@ int init_socket()
         return -1;
     }
 
-    if(inet_pton(AF_INET, SERV_IP, &addr.sin_addr)<=0)
+    if(inet_pton(AF_INET, ip_addr, &addr.sin_addr)<=0)
     {
         perror("Server Address Error.");
         return -1;
@@ -33,13 +33,22 @@ int main(int argc, char const *argv[])
     int sockfd = 0, res;
     ctrl_t ctrl_msg = {0};
 
-    if ((sockfd = init_socket()) < 0)
+    if (argc >= 2)
+    {
+        sockfd = init_socket(argv[1]);
+    }
+    else
+    {
+        sockfd = init_socket(SERV_IP);
+    }
+    
+
+    if (sockfd < 0)
     {
         exit(0);
     }
 
-    printf("Now on!");
-
+    printf("Now on!\n");
     while(1)
     {
         res = read(sockfd, &ctrl_msg, sizeof(ctrl_t));
