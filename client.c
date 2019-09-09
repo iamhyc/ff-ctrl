@@ -2,10 +2,10 @@
 
 int init_socket()
 {
-    int sock_fd = 0;
+    int sockfd = 0;
     struct sockaddr_in addr;
 
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
+    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
     {
         perror("socket() failed.");
         return -1;
@@ -16,16 +16,16 @@ int init_socket()
         perror("Server Address Error.");
         return -1;
     }
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(SERV_PORT);
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(SERV_PORT);
 
-    if (connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    if (connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         perror("connection failed.");
         return -1;
     }
 
-    return sock_fd;
+    return sockfd;
 }
 
 int main(int argc, char const *argv[]) 
@@ -33,9 +33,16 @@ int main(int argc, char const *argv[])
     int sockfd = 0, res;
     ctrl_t ctrl_msg = {0};
 
+    if ((sockfd = init_socket()) < 0)
+    {
+        exit(0);
+    }
+
+    printf("Now on!");
+
     while(1)
     {
-        res = read(sockfd, ctrl_msg, sizeof(ctrl_t));
+        res = read(sockfd, &ctrl_msg, sizeof(ctrl_t));
         printf("received once.\n");
     }
     

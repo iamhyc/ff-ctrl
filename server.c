@@ -9,7 +9,7 @@ int init_socket()
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
     {
         perror("socket fd failed.");
-        return -1
+        return -1;
     }
 
     // setsockopt, Bind socket to port
@@ -29,8 +29,8 @@ int init_socket()
         perror("bind failed.");
         return -1;
     }
-
-    if ((listen(sockfd, 1)) < 0)
+    
+    if ((listen(sockfd, 10)) < 0)
     {
         perror("listen failed.");
         return -1;
@@ -43,6 +43,7 @@ int main(int argc, char const *argv[])
 {
     int sockfd,c_sockfd;
     struct sockaddr_in addr;
+    socklen_t addr_len;
     ctrl_t ctrl_msg = {0};
     
     if ((sockfd = init_socket()) < 0)
@@ -50,17 +51,18 @@ int main(int argc, char const *argv[])
         exit(0);
     }
 
-    if ((c_sockfd = accept(sockfd, &addr, sizeof(addr))) < 0)
+    printf("Waiting for connection ...\n");
+    if ((c_sockfd = accept(sockfd, (struct sockaddr *)&addr, &addr_len)) < 0)
     {
         perror("accept failed.");
         exit(0);
     }
-    printf("From %s:%d", inet_ntoa(addr.sin_addr), nstoh(addr.sin_port));
+    printf("From %s:%d", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
     
     while(1)
     {
         sleep(1);
-        if (send(client_sockfd, ctrl_msg, sizeof(ctrl_t), 0) < 0)
+        if (send(c_sockfd, &ctrl_msg, sizeof(ctrl_t), 0) < 0)
         {
             perror("Packet Loss.");
         }

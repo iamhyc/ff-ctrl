@@ -5,4 +5,4 @@ build:
 	gcc client.c -o client
 
 clean:
-	rm server client
+	rm -f server client
