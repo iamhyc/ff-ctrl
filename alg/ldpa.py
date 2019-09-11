@@ -11,13 +11,12 @@ from __future__ import print_function
 
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
-import math
-import time
+import math, time
 import numpy as np
 #from tensorflow.examples.tutorials.mnist import input_data
 # number 1 to 10 data
 # mnist = input_data.read_data_sets('data/fashion', one_hot=True)
-from SockFeeder import SockFeeder
+from alg.SockFeeder import SockFeeder
 
 # little modification
 mnist = tf.keras.datasets.mnist
@@ -102,7 +101,14 @@ sess = tf.Session()
 # 2017-03-02 if using tensorflow >= 0.12
 
 ###################### Main Section ######################
-sf = SockFeeder()
+sf = SockFeeder('idpa')
+while sf.connect() < 0:
+    time.sleep(1.0) #retry until connected
+
+while True:
+    results = sf.get(num=1) #blocking, until get $num samples
+    #TODO: 把下面的复制过来并且可以work
+    pass
 
 size_vec =[1553,1367,1245,1484,1336,1486,1077,1487,1423,1898] #NOTE: random index
 acc_vec=np.ones(10)*0.1

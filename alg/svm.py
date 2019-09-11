@@ -4,6 +4,8 @@ Created on Wed Apr 10 11:49:33 2019
 
 @author: shuai wang
 """
+import time
+from alg.SockFeeder import SockFeeder
 
 # print(__doc__)
 
@@ -39,6 +41,16 @@ data = digits.images.reshape((n_samples, -1))
 
 # Create a classifier: a support vector classifier
 classifier = svm.SVC(C=1,gamma=0.001)
+
+###################### Main Section ######################
+sf = SockFeeder('idpa')
+while sf.connect() < 0:
+    time.sleep(1.0) #retry until connected
+
+while True:
+    results = sf.get(num=1) #blocking, until get $num samples
+    #TODO: 把下面的复制过来并且可以work
+    pass
 
 size_vec =[50,100,1120,1019,1058,1110,1077,987,1123,1056]
 acc=size_vec

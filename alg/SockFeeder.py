@@ -1,24 +1,42 @@
 import socket
-import DataTypes as types
+from alg.Serialization import Serialization as ser
+from alg.params import *
 
 class SockFeeder(object):
 
-    def __init__(self, srv_port, data_type):
+    def __init__(self, alg_name):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.port = srv_port
-        self.sock.bind(('', srv_port))
+        self.alg = alg_name
+        self.sock.bind(('', op_map[alg][1]))
         self.sock.listen(1)
         pass
 
-    def connect():
+    def connect(self):
         self.c_sock, self.c_addr = self.sock.accept()
         return self.c_sock
 
-    def get(num=1):
-        results = list()
-        for i in range(num):
-            buffer = self.c_sock.recv(1024) #FIXME: fix with real data type
-            results.append(buffer) 
-        return results
+    def reconnect(self):
+        try:
+            self.c_sock.close()
+        finally:
+            self.c_sock, self.c_addr = self.sock.accept()
+        pass
+
+    def get(self, num=1):
+        results, _brokens, _collected = list(), 0, 0
+        while _collected < num:
+            try:
+                buffer = self.c_sock.recv(4096)
+            except Exception as e:
+                self.reconnect()
+                continue
+            
+            try:
+                buffer = ser.restore(buffer)
+                results.append(buffer)
+                _collected += 1
+            except Exception as e:
+                _brokens += 1
+        return _brokens, results
 
     pass
