@@ -1,4 +1,6 @@
 .vscode
 *.o
+alg/__py_cache__
+*.pyc
 server
 client
