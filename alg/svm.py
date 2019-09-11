@@ -43,7 +43,7 @@ data = digits.images.reshape((n_samples, -1))
 classifier = svm.SVC(C=1,gamma=0.001)
 
 ###################### Main Section ######################
-sf = SockFeeder('idpa')
+sf = SockFeeder('svm')
 while sf.connect() < 0:
     time.sleep(1.0) #retry until connected
 
