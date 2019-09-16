@@ -2,13 +2,15 @@ import socket
 from sys import argv
 from time import sleep
 from itertools import cycle
-from alg.Serialization import Serialization as ser
-from alg.params import *
+from Serialization import Serialization as ser
+from params import *
 
-import numpy as np
 import tensorflow as tf
+import numpy as np
 from tensorflow.keras.datasets import mnist
 from sklearn import datasets
+
+DBG=1
 
 class SockCollector(object):
     def __init__(self, op_code):
@@ -24,7 +26,7 @@ class SockCollector(object):
             n_samples = len(digits.images)
             shaped_images = digits.images.reshape((n_samples, -1))
             return zip(shaped_images, digits.target) #FIXME: pick a random subset
-        elif self.alg=='idpa':      #NOTE: load dataset for IDPA jobs
+        elif self.alg=='ldpa':      #NOTE: load dataset for LDPA jobs
             (x_train, y_train), (x_test, y_test) = mnist.load_data()
             x_train = np.reshape(x_train/255.0, (60000, 784))
             y_train = tf.keras.utils.to_categorical(y_train, 10)
@@ -34,17 +36,34 @@ class SockCollector(object):
         pass
 
     def reconnect(self):
-        try:
-            self.sock.close()
-        finally:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect( op_map[self.alg] )
+        print('Broken pipe! Reconnecting ...')
+        self.sock.close()
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        _success_flag = 0
+        while not _success_flag:
+            try:
+                self.sock.connect( op_map[self.alg] )
+                _success_flag = 1
+                print('Now on!')
+            except Exception as e:
+                print('Server Not Available! Reconnecting ...')
+                sleep(1.0)
+            pass
         pass
 
     def send(self, obj):
         _len, _buffer = ser.dump(obj)
-        while self.sock.send(_buffer) < _len:
-            self.reconnect()
+        _success_flag = 0
+
+        while not _success_flag:
+            try:
+                self.sock.send(_buffer)
+                _success_flag = 1
+                if DBG: print('send once')
+            except Exception as e:
+                self.reconnect()
+            pass
         pass
 
 def main():
@@ -52,24 +71,24 @@ def main():
         print('No Dataset Specified!')
         exit()
     
-    op_code = argv[2]
+    op_code = argv[1]
     try:
         sc = SockCollector(op_code)
+        print('Now on!')
         dataset = sc.load_data()
         for sample in cycle(dataset):
             sc.send(sample)
             sleep(1.0) #FIXME: fairly sleep for lower rate
             pass
     except Exception as e:
-        print('No "%s" dataset!'%argv[2])
+        print('No "%s" dataset available!'%argv[1])
         raise(e)
-        pass
     pass
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        raise(e) #print(e)
+        print(e) #print(e)
     finally:
         exit()

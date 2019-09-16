@@ -44,11 +44,10 @@ classifier = svm.SVC(C=1,gamma=0.001)
 
 ###################### Main Section ######################
 sf = SockFeeder('svm')
-while sf.connect() < 0:
-    time.sleep(1.0) #retry until connected
+sf.connect()
 
 while True:
-    results = sf.get(num=1) #blocking, until get $num samples
+    _, results = sf.get(num=1) #blocking, until get $num samples
     #TODO: 把下面的复制过来并且可以work
     pass
 

@@ -9,14 +9,15 @@ Please note, this code is only for python 3+. If you are using python 2+, please
 
 from __future__ import print_function
 
-import tensorflow.compat.v1 as tf
+# import tensorflow.compat.v1 as tf
+import tensorflow as tf
 tf.disable_v2_behavior()
 import math, time
 import numpy as np
 #from tensorflow.examples.tutorials.mnist import input_data
 # number 1 to 10 data
 # mnist = input_data.read_data_sets('data/fashion', one_hot=True)
-from alg.SockFeeder import SockFeeder
+from SockFeeder import SockFeeder
 
 # little modification
 mnist = tf.keras.datasets.mnist
@@ -101,48 +102,29 @@ sess = tf.Session()
 # 2017-03-02 if using tensorflow >= 0.12
 
 ###################### Main Section ######################
-sf = SockFeeder('idpa')
-while sf.connect() < 0:
-    time.sleep(1.0) #retry until connected
+if int((tf.__version__).split('.')[1]) < 12 and int((tf.__version__).split('.')[0]) < 1:
+    init = tf.initialize_all_variables()
+else:
+    init = tf.global_variables_initializer()
+sess.run(init)
 
+
+sf = SockFeeder('ldpa')
+sf.connect()
+
+j=0
 while True:
-    results = sf.get(num=1) #blocking, until get $num samples
-    #TODO: 把下面的复制过来并且可以work
-    pass
-
-size_vec =[1553,1367,1245,1484,1336,1486,1077,1487,1423,1898] #NOTE: random index
-acc_vec=np.ones(10)*0.1
-for j in range(10):
-    while acc_vec[j]<0.2 and size_vec[j]>1:
-        if int((tf.__version__).split('.')[1]) < 12 and int((tf.__version__).split('.')[0]) < 1:
-            init = tf.initialize_all_variables()
-        else:
-            init = tf.global_variables_initializer()
-        sess.run(init)
+    _, results = sf.get(num=1) # blocking, until get $num samples
+    print(results[0][0].shape, results[0][1].shape)
     
-        size=size_vec[j]
-        num_mini = math.ceil(size/100)
-        batch_xs = x_train[size*0:size*1]
-        batch_ys = y_train[size*0:size*1]
-        num_epochs = math.ceil(5000/num_mini)
-        for epoch in range(num_epochs):
-            for i in range(num_mini):
-                sess.run(train_step, feed_dict={xs: batch_xs[100*(i):100*(i+1)], 
-                                    ys: batch_ys[100*(i):100*(i+1)],
-                                    keep_prob: 0.5})
-    
-        # sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5}) 
-        #if epoch == num_epochs-100:
-#            print(compute_accuracy(
-#                   x_test[:1000], y_test[:1000]))
+    # batch_xs = results[0][0] # collect 1 images
+    # batch_ys = results[0][1] # collect 1 labels
+    # num_epochs = 10 # go though all the samples 10 times
+    # for epoch in range(num_epochs):
+    #     sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
         
-        acc_vec[j]=compute_accuracy(x_test[:1000], y_test[:1000])
-        if acc_vec[j]>0.2:
-            print(acc_vec[j])
-
-#NOTE: your code
-elapsed_time = time.time() - start_time
-print(elapsed_time)
-print('finish')
-print(acc_vec)
-print(sum(acc_vec)/10)
+    # acc = compute_accuracy(x_test[:1000], y_test[:1000]) # compute the accuracy for this collection round
+    # print(j) # print the round number
+    # print(acc) # print the corresponding accuracy
+    # j+ 
+    pass
