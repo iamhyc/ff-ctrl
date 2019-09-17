@@ -1,8 +1,3 @@
-# View more python tutorial on my Youtube and Youku channel!!!
-
-# Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg
-# Youku video tutorial: http://i.youku.com/pythontutorial
-
 """
 Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.
 """
@@ -109,22 +104,22 @@ else:
 sess.run(init)
 
 
-sf = SockFeeder('ldpa')
+sf = SockFeeder('cnn')
 sf.connect()
 
 j=0
+batch_xs = []
+batch_ys = []
 while True:
-    _, results = sf.get(num=1) # blocking, until get $num samples
+    _, results = sf.get(num=10) # blocking, until get $num samples
     print(results[0][0].shape, results[0][1].shape)
     
-    # batch_xs = results[0][0] # collect 1 images
-    # batch_ys = results[0][1] # collect 1 labels
-    # num_epochs = 10 # go though all the samples 10 times
-    # for epoch in range(num_epochs):
-    #     sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
+    batch_xs = [x[0] for x in results] # collect new images
+    batch_ys = [x[1] for x in results] # collect new labels
+    num_epochs = 10 # go though all the samples 10 times
+    for epoch in range(num_epochs):
+        sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
         
-    # acc = compute_accuracy(x_test[:1000], y_test[:1000]) # compute the accuracy for this collection round
-    # print(j) # print the round number
-    # print(acc) # print the corresponding accuracy
-    # j+ 
+    acc = compute_accuracy(x_test[:1000], y_test[:1000]) # compute the accuracy for this collection round
+    print(acc) # print the corresponding accuracy
     pass

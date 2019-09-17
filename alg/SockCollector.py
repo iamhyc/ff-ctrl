@@ -26,7 +26,7 @@ class SockCollector(object):
             n_samples = len(digits.images)
             shaped_images = digits.images.reshape((n_samples, -1))
             return zip(shaped_images, digits.target) #FIXME: pick a random subset
-        elif self.alg=='ldpa':      #NOTE: load dataset for LDPA jobs
+        elif self.alg=='cnn':      #NOTE: load dataset for CNN jobs
             (x_train, y_train), (x_test, y_test) = mnist.load_data()
             x_train = np.reshape(x_train/255.0, (60000, 784))
             y_train = tf.keras.utils.to_categorical(y_train, 10)
@@ -48,7 +48,7 @@ class SockCollector(object):
                 print('Now on!')
             except Exception as e:
                 print('Server Not Available! Reconnecting ...')
-                sleep(1.0)
+                sleep(0.1)
             pass
         pass
 
@@ -78,7 +78,7 @@ def main():
         dataset = sc.load_data()
         for sample in cycle(dataset):
             sc.send(sample)
-            sleep(1.0) #FIXME: fairly sleep for lower rate
+            sleep(0.1) #FIXME: fairly sleep for lower rate
             pass
     except Exception as e:
         print('No "%s" dataset available!'%argv[1])
