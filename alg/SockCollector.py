@@ -80,7 +80,7 @@ def main():
         dataset = sc.load_data()
         for sample in cycle(dataset):
             sc.send(sample)
-            # sleep(0.01) #FIXME: fairly sleep for lower rate
+            sleep(0.01)
             pass
     except Exception as e:
         print('No "%s" dataset available!'%argv[1])
