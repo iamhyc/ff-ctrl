@@ -10,7 +10,7 @@ import numpy as np
 from tensorflow.keras.datasets import mnist
 from sklearn import datasets
 
-DBG=1
+DBG=0
 
 class SockCollector(object):
     def __init__(self, op_code):
@@ -54,11 +54,13 @@ class SockCollector(object):
 
     def send(self, obj):
         _len, _buffer = ser.dump(obj)
+        # _len = _len.to_bytes(length=2)
+        packet = PKT_HEADER + _buffer
         _success_flag = 0
 
         while not _success_flag:
             try:
-                self.sock.send(_buffer)
+                self.sock.send(packet)
                 _success_flag = 1
                 if DBG: print('send once')
             except Exception as e:
@@ -78,7 +80,7 @@ def main():
         dataset = sc.load_data()
         for sample in cycle(dataset):
             sc.send(sample)
-            sleep(0.1) #FIXME: fairly sleep for lower rate
+            # sleep(0.01) #FIXME: fairly sleep for lower rate
             pass
     except Exception as e:
         print('No "%s" dataset available!'%argv[1])
