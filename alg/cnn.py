@@ -112,7 +112,6 @@ batch_xs = []
 batch_ys = []
 while True:
     _, results = sf.get(num=10) # blocking, until get $num samples
-    print(results[0][0].shape, results[0][1].shape)
     
     batch_xs = [x[0] for x in results] # collect new images
     batch_ys = [x[1] for x in results] # collect new labels

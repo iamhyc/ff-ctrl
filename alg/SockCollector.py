@@ -48,7 +48,7 @@ class SockCollector(object):
                 print('Now on!')
             except Exception as e:
                 print('Server Not Available! Reconnecting ...')
-                sleep(0.1)
+                sleep(1.0)
             pass
         pass
 
@@ -80,7 +80,7 @@ def main():
         dataset = sc.load_data()
         for sample in cycle(dataset):
             sc.send(sample)
-            sleep(0.01)
+            sleep(0.01) #TODO: sleep time could be arrival rate
             pass
     except Exception as e:
         print('No "%s" dataset available!'%argv[1])

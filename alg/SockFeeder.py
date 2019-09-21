@@ -32,12 +32,16 @@ class SockFeeder(object):
         pass
 
     def recv(self, buf_size=2048):
-        try:
-            recv_buffer = self.c_sock.recv(buf_size)
-            if len(recv_buffer) == 0:
-                raise Exception()
-        except Exception as e:
-            self.reconnect()
+        _success_flag, recv_buffer = 0, b''
+        while not _success_flag:
+            try:
+                recv_buffer = self.c_sock.recv(buf_size)
+                if len(recv_buffer) == 0:
+                    raise Exception()
+                _success_flag = 1
+            except Exception as e:
+                self.reconnect()
+            pass
         return recv_buffer
 
     def sync(self):
