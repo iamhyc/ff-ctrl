@@ -60,9 +60,12 @@ class SockFeeder(object):
         while _collected < num:
             self.buffer = self.buffer[sync_idx + len(PKT_HEADER):]
             sync_idx = self.sync()
-            _sample = ser.restore(self.buffer[:sync_idx])
-            results.append(_sample)
-            _collected += 1
+            try:
+                _sample = ser.restore(self.buffer[:sync_idx])
+                results.append(_sample)
+                _collected += 1
+            except Exception as e:
+                _brokens   += 1
             pass
 
         return _brokens, results
