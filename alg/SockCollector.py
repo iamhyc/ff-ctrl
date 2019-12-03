@@ -16,8 +16,9 @@ class SockCollector(object):
     def __init__(self, op_code):
         self.alg = op_code
         self.data = list()
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect( op_map[op_code] )
+        # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.reconnect()
+        # self.sock.connect( op_map[op_code] )
         pass
 
     def load_data(self):
@@ -37,7 +38,7 @@ class SockCollector(object):
 
     def reconnect(self):
         print('Broken pipe! Reconnecting ...')
-        self.sock.close()
+        # self.sock.close()
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         _success_flag = 0
