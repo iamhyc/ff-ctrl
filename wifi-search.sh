@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WLAN="$(ls /sys/class/net | grep 'wls\|wlan\|wifi' | head -1)"
+WLAN="$(ls /sys/class/net | grep 'wlp\|wlan\|wifi' | head -1)"
 
 sudo echo "Monitoring over $(WLAN) ..."
 
