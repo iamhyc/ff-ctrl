@@ -6,7 +6,7 @@ sudo echo "Monitoring over $WLAN ..."
 
 while true; do
     i=$(cat /sys/class/net/$WLAN/carrier)
-    if [ -ne $i 1 ]; then
+    if [ $i -ne 1 ]; then
         echo "Wi-Fi disconnected, searching ..."
         sudo killall wpa_supplicant
         sudo wpa_supplicant -i $WLAN -c wpa_supplicant.conf -B

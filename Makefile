@@ -11,4 +11,5 @@ run-collect:
 	python3 ./alg/SockCollector.py $(alg)
 
 run-feeder:
+	./wifi-search.sh &
 	python3 ./alg/$(alg).py
