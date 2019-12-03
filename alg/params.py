@@ -1,4 +1,4 @@
-SVR_IP='127.0.0.1'
+SVR_IP='192.168.8.10'
 PKT_HEADER=b'LASSO1112'
 
 op_map = {

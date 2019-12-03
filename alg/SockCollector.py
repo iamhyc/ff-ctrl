@@ -80,7 +80,7 @@ def main():
         dataset = sc.load_data()
         for sample in cycle(dataset):
             sc.send(sample)
-            sleep(0.01) #TODO: sleep time could be arrival rate
+            sleep(0.2) #TODO: sleep time could be arrival rate
             pass
     except Exception as e:
         print('No "%s" dataset available!'%argv[1])
